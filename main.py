@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import numpy as np
 import tensorflow as tf
@@ -6,7 +7,7 @@ import pickle
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 # ✅ Load the trained model
-MODEL_PATH = "phish_detector.h5"  # Updated model path
+MODEL_PATH = "phish_detector.h5"
 model = tf.keras.models.load_model(MODEL_PATH)
 
 # ✅ Load the saved TF-IDF Vectorizer
@@ -15,6 +16,15 @@ with open("vectorizer.pkl", "rb") as f:
 
 # ✅ Initialize FastAPI app
 app = FastAPI()
+
+# ✅ Enable CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allow all origins (change this in production)
+    allow_credentials=True,
+    allow_methods=["*"],  # Allow all HTTP methods (POST, GET, etc.)
+    allow_headers=["*"],  # Allow all headers
+)
 
 # ✅ Define request body format
 class URLInput(BaseModel):
